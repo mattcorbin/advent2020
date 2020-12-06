@@ -27,6 +27,35 @@ fn parse_sets(input: &str) -> Vec<HashSet<char>> {
     sets
 }
 
+fn parse_sets_intersection(input: &str) -> Vec<HashSet<char>> {
+    let mut sets: Vec<HashSet<char>> = Vec::new();
+    let mut working_sets: Vec<HashSet<char>> = Vec::new();
+    for line in input.lines() {
+        if line.is_empty() {
+            let mut current_set = HashSet::new();
+            current_set = current_set.union(&working_sets[0]).map(|e| *e).collect();
+            for i in 1..working_sets.len() {
+                current_set = current_set.intersection(&working_sets[i]).map(|e| *e).collect();
+            }
+            sets.push(current_set);
+            working_sets = Vec::new();
+        } else {
+            let mut new_set: HashSet<char> = HashSet::new();
+            for item in line.chars() {
+                new_set.insert(item);
+            }
+            working_sets.push(new_set);
+        }
+    }
+    let mut current_set = HashSet::new();
+    current_set = current_set.union(&working_sets[0]).map(|e| *e).collect();
+    for i in 1..working_sets.len() {
+        current_set = current_set.intersection(&working_sets[i]).map(|e| *e).collect();
+    }
+    sets.push(current_set);
+    sets
+}
+
 fn sum_counts(sets: Vec<HashSet<char>>) -> usize {
     sets.iter().map(|s| s.len()).sum()
 }
@@ -34,4 +63,5 @@ fn sum_counts(sets: Vec<HashSet<char>>) -> usize {
 fn main() {
     let input = parse_input();
     println!("sum: {}", sum_counts(parse_sets(&input)));
+    println!("intersection sum: {}", sum_counts(parse_sets_intersection(&input)));
 }
